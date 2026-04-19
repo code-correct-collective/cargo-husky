@@ -1,7 +1,5 @@
-mod cli;
-
 use clap::Parser;
-use crate::cli::HuskyArgs;
+use c3_cargo_husky::cli::HuskyArgs;
 
 fn main() {
     let args = HuskyArgs::parse();

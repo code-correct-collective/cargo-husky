@@ -6,20 +6,20 @@ use clap::{Args, Parser, Subcommand};
 #[command(version, about, long_about = None)]
 pub struct HuskyArgs {
 
-    #[command(subcommand)]
-    command: Commands,
+   #[command(subcommand)]
+    pub command: Commands,
     
 }
 
 #[derive(Subcommand, Debug)]
-enum Commands {
+pub enum Commands {
     /// Installs the husky hooks
     Install(InstallArgs)
 }
 
 /// Installs the husky hooks
 #[derive(Args, Debug)]
-struct InstallArgs {
+pub struct InstallArgs {
     #[arg(short, long, default_value_t = String::from(".husky"))]
     directory: String
 }
