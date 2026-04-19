@@ -13,13 +13,15 @@ pub struct HuskyArgs {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// Installs the husky hooks
-    Install(InstallArgs)
+    /// Installs the husky hooks into the git repository.
+    Install(InstallArgs),
+    /// Uninstalls the husky hooks from the git repository.
+    Uninstall,
 }
 
-/// Installs the husky hooks
 #[derive(Args, Debug)]
 pub struct InstallArgs {
+    /// The default directory to install the git hooks.
     #[arg(short, long, default_value_t = String::from(".husky"))]
     directory: String
 }
