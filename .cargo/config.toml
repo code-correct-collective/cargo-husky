@@ -1,0 +1,2 @@
+[alias]
+husky = "run -q --package c3-cargo-husky"
