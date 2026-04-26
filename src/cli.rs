@@ -1,9 +1,6 @@
 use clap::{Args, Parser, Subcommand};
-use rust_embed::Embed;
 
-#[derive(Embed)]
-#[folder = "assets"]
-struct Assets;
+use crate::husky::install;
 
 /// A program to install git pre-commit ant pre-push hooks in a 
 /// cross platform supported way.
@@ -33,9 +30,6 @@ pub struct InstallArgs {
 
 impl InstallArgs {
     pub fn execute(&self) {
-        let hook = Assets::get("hook").unwrap();
-        
-        println!("the script is a {:?}", std::str::from_utf8(hook.data.as_ref()));
-        todo!("create the function to initialize github");
+        install(&self.directory);
     }
 }
