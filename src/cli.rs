@@ -33,9 +33,8 @@ pub struct InstallArgs {
 
 impl InstallArgs {
     pub fn execute(&self) {
-        let hook = Assets::get("src/assets/hook").unwrap();
+        let hook = Assets::get("hook").unwrap();
         
-        println!("create {}", self.directory);
         println!("the script is a {:?}", std::str::from_utf8(hook.data.as_ref()));
         todo!("create the function to initialize github");
     }
