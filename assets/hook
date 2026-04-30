@@ -2,19 +2,19 @@
 . "$(dirname "$0")/_/husky.sh"
 
 ## husky task runner examples -------------------
-## Note : for local installation use 'dotnet' prefix. e.g. 'dotnet husky'
+## Note : for non-local installation use 'cargo-husky' that must be on the path. e.g. 'cargo-husky'
 
 ## run all tasks
-#husky run
+#cargo husky run
 
 ### run all tasks with group: 'group-name'
-#husky run --group group-name
+#cargo husky run --group group-name
 
 ## run task with name: 'task-name'
-#husky run --name task-name
+#cargo husky run --name task-name
 
 ## pass hook arguments to task
-#husky run --args "$1" "$2"
+#cargo husky run --args "$1" "$2"
 
 ## or put your custom commands -------------------
-#echo 'Husky.Net is awesome!'
+#echo 'c3-cargo-husky is awesome!'
