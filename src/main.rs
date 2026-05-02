@@ -7,11 +7,9 @@ use c3_cargo_husky::husky::error;
 fn main() -> Result<(), error::HuskyError> {
     let args = cli::HuskyArgs::parse();
 
-    dbg!(&args);
-    
     match args.command {
         cli::Commands::Install(ref install_args) => husky::install(&install_args.directory)?,
-        _ => println!("oops")
+        cli::Commands::Uninstall => husky::uninstall()?,
     }
 
     Ok(())

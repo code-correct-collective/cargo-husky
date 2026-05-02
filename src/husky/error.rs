@@ -15,4 +15,3 @@ impl From<std::io::Error> for HuskyError {
         HuskyError::Io(value)
     }
 }
-

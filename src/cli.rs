@@ -1,14 +1,12 @@
 use clap::{Args, Parser, Subcommand};
 
-/// A program to install git pre-commit ant pre-push hooks in a 
+/// A program to install git pre-commit ant pre-push hooks in a
 /// cross platform supported way.
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct HuskyArgs {
-
-   #[command(subcommand)]
+    #[command(subcommand)]
     pub command: Commands,
-    
 }
 
 #[derive(Subcommand, Debug)]
@@ -23,6 +21,5 @@ pub enum Commands {
 pub struct InstallArgs {
     /// The default directory to install the git hooks.
     #[arg(short, long, default_value_t = String::from(".husky"))]
-    pub directory: String
+    pub directory: String,
 }
-
