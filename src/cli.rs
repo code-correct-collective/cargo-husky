@@ -28,11 +28,9 @@ pub struct InstallArgs {
 
 #[derive(Args, Debug)]
 pub struct SetArgs {
-    /// The git hook to add (pre-commit, pre-push, etc) 
+    /// The git hook to add (pre-commit, pre-push, etc)
     pub hook: String,
 
     #[arg(short, long, default_value_t = String::from(""))]
     pub command: String,
 }
-
-

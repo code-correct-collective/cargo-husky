@@ -8,10 +8,8 @@ fn main() -> Result<(), error::HuskyError> {
     let args = cli::HuskyArgs::parse();
 
     match args.command {
-        cli::Commands::Install(ref install_args) => husky::install(&install_args.directory)?,
-        cli::Commands::Uninstall => husky::uninstall()?,
-        cli::Commands::Set(ref args) => { dbg!(args); todo!(); },
+        cli::Commands::Install(ref args) => husky::install(&args.directory),
+        cli::Commands::Uninstall => husky::uninstall(),
+        cli::Commands::Set(ref args) => husky::set_hook(&args.hook, &args.command),
     }
-
-    Ok(())
 }
