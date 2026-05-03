@@ -12,5 +12,6 @@ fn main() -> Result<(), error::HuskyError> {
         cli::Commands::Uninstall => husky::uninstall(),
         cli::Commands::Set(ref args) => husky::set_hook(&args.hook, &args.command),
         cli::Commands::Run(ref args) => husky::run(args),
+        cli::Commands::List => husky::list(),
     }
 }

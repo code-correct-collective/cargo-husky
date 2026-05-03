@@ -19,5 +19,4 @@
 ## or put your custom commands -------------------
 #echo 'c3-cargo-husky is awesome!'
 
-cargo clippy
-cargo fmt --check
+cargo run run -g pre-commit

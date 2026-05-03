@@ -1,11 +1,13 @@
 pub mod error;
+pub mod task_runner;
 mod utils;
 
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
-use crate::husky::utils::UnitHuskyResult;
+use crate::husky::task_runner::TaskList;
+use crate::husky::utils::{ASSETS_TASK_RUNNER, UnitHuskyResult};
 
 pub fn install(directory: &str) -> UnitHuskyResult {
     writeln!(io::stdout(), "⚡ Installing husky to {}..", &directory)?;
@@ -90,8 +92,27 @@ pub fn set_hook(hook_name: &str, command: &str) -> UnitHuskyResult {
     writeln!(io::stdout(), "✔️ {} hook updated", hook_name)?;
     Ok(())
 }
+pub fn list() -> UnitHuskyResult {
+    let repository = utils::open_repository()?;
+    let task_list_file = utils::get_husky_path(&repository)?.join(ASSETS_TASK_RUNNER);
+
+    let task_list = TaskList::open(task_list_file.as_path())?;
+
+    task_runner::display_tasks(&task_list)?;
+
+    Ok(())
+}
 
 pub fn run(args: &RunArgs) -> UnitHuskyResult {
-    dbg!(args);
-    todo!()
+    let repository = utils::open_repository()?;
+    let install_path = utils::get_husky_path(&repository)?.join(ASSETS_TASK_RUNNER);
+    let task_list = TaskList::open(install_path.as_path())?;
+
+    match (&args.name, &args.group) {
+        (None, None) => task_runner::run_tasks(&task_list.tasks.iter().collect())?,
+        (Some(name), _) => task_runner::run_task_by_name(&task_list.tasks, name)?,
+        (_, Some(group)) => task_runner::run_tasks_by_group(&task_list.tasks, group)?,
+    };
+
+    Ok(())
 }

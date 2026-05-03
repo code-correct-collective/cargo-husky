@@ -19,6 +19,8 @@ pub enum Commands {
     Set(SetArgs),
     /// Run tasks
     Run(RunArgs),
+    /// List available tasks
+    List,
 }
 
 #[derive(Args, Debug)]

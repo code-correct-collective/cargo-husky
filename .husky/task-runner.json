@@ -5,6 +5,25 @@
          "name": "welcome-message-example",
          "command": "echo",
          "args": [ "Cargo Husky is awesome!" ]
+      },
+      {
+         "name": "cargo-check",
+         "group": "pre-commit",
+         "command": "cargo",
+         "args": [ "check" ]
+      },
+      {
+         "name": "cargo-clippy",
+         "group": "pre-commit",
+         "command": "cargo",
+         "args": [ "clippy" ]
+      },
+      {
+         "name": "cargo-fmt-verify",
+         "group": "pre-commit",
+         "command": "cargo",
+         "args": [ "fmt", "--check" ]
       }
+
    ]
 }
