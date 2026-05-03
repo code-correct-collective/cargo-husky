@@ -19,4 +19,4 @@
 ## or put your custom commands -------------------
 #echo 'c3-cargo-husky is awesome!'
 
-cargo run run -g pre-commit
+cargo run run -g pre-commit # dog food my library...
