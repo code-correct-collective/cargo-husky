@@ -1,0 +1,10 @@
+{
+   "$schema": "https://raw.githubusercontent.com/code-correct-collective/cargo-husky/refs/heads/main/schema.json",
+   "tasks": [
+      {
+         "name": "welcome-message-example",
+         "command": "echo",
+         "args": [ "Cargo Husky is awesome!" ]
+      }
+   ]
+}
