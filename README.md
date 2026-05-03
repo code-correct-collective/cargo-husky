@@ -13,9 +13,9 @@ Heavy inspiration for this rust port is taken from the great tool [Husky.Net](ht
 
 - [x] Initial installation of husky settings
 - [x] Uninstallation of the hooks
-- [ ] Create default hook
+- [x] Create default hook
 - [ ] Create task runner
-- [ ] Create way to add conditions to the tasks
+- [ ] Create way to add conditions to the tasks, so they run on specific scenarios
 - [ ] Colorize output
 
 
