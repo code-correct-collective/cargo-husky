@@ -4,6 +4,7 @@ mod utils;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 
+use crate::cli::RunArgs;
 use crate::husky::utils::UnitHuskyResult;
 
 pub fn install(directory: &str) -> UnitHuskyResult {
@@ -88,4 +89,9 @@ pub fn set_hook(hook_name: &str, command: &str) -> UnitHuskyResult {
     }
     writeln!(io::stdout(), "✔️ {} hook updated", hook_name)?;
     Ok(())
+}
+
+pub fn run(args: &RunArgs) -> UnitHuskyResult {
+    dbg!(args);
+    todo!()
 }

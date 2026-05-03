@@ -11,5 +11,6 @@ fn main() -> Result<(), error::HuskyError> {
         cli::Commands::Install(ref args) => husky::install(&args.directory),
         cli::Commands::Uninstall => husky::uninstall(),
         cli::Commands::Set(ref args) => husky::set_hook(&args.hook, &args.command),
+        cli::Commands::Run(ref args) => husky::run(args),
     }
 }

@@ -17,6 +17,8 @@ pub enum Commands {
     Uninstall,
     /// Creates or appends a git hook (set pre-commit -c "echo cargo husky is awesome!")
     Set(SetArgs),
+    /// Run tasks
+    Run(RunArgs),
 }
 
 #[derive(Args, Debug)]
@@ -31,6 +33,22 @@ pub struct SetArgs {
     /// The git hook to add (pre-commit, pre-push, etc)
     pub hook: String,
 
+    /// The command to write to the hook
     #[arg(short, long, default_value_t = String::from(""))]
     pub command: String,
+}
+
+#[derive(Args, Debug)]
+pub struct RunArgs {
+    /// The name of the task to run
+    #[arg(short, long)]
+    pub name: Option<String>,
+
+    /// The group name of the tasks to run
+    #[arg(short, long)]
+    pub group: Option<String>,
+
+    /// Pass custom arguments to tasks
+    #[arg(short, long)]
+    pub args: Option<Vec<String>>,
 }
