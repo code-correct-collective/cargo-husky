@@ -107,7 +107,6 @@ fn create_install_path(git_path: &path::Path, install_dir: &str) -> Result<(), e
         fs::write(task_runner_path, &task_runner_data.data)?;
     }
 
-
     set_execute_permissions(&husky_path)?;
 
     Ok(())

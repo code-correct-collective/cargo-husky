@@ -10,6 +10,7 @@ fn main() -> Result<(), error::HuskyError> {
     match args.command {
         cli::Commands::Install(ref install_args) => husky::install(&install_args.directory)?,
         cli::Commands::Uninstall => husky::uninstall()?,
+        cli::Commands::Set(ref args) => { dbg!(args); todo!(); },
     }
 
     Ok(())

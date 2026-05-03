@@ -15,6 +15,8 @@ pub enum Commands {
     Install(InstallArgs),
     /// Uninstalls the husky hooks from the git repository.
     Uninstall,
+    /// Creates or appends a git hook (set pre-commit -c "echo cargo husky is awesome!")
+    Set(SetArgs),
 }
 
 #[derive(Args, Debug)]
@@ -23,3 +25,14 @@ pub struct InstallArgs {
     #[arg(short, long, default_value_t = String::from(".husky"))]
     pub directory: String,
 }
+
+#[derive(Args, Debug)]
+pub struct SetArgs {
+    /// The git hook to add (pre-commit, pre-push, etc) 
+    pub hook: String,
+
+    #[arg(short, long, default_value_t = String::from(""))]
+    pub command: String,
+}
+
+
