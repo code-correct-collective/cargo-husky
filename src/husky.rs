@@ -13,6 +13,8 @@ struct Assets;
 
 const DEFAULT_DIRECTORY: &str = ".husky";
 const ASSETS_HUSKY_SH: &str = "husky.sh";
+const ASSETS_TASK_RUNNER: &str = "task-runner.json";
+
 const HOOKS_PATH: &str = "core.hooksPath";
 
 pub fn install(directory: &str) -> Result<(), error::HuskyError> {
@@ -67,9 +69,9 @@ fn set_execute_permissions(path: &path::Path) -> Result<(), error::HuskyError> {
     {
         use std::os::unix::fs::PermissionsExt;
 
-        let mut perms = fs::metadata(&path)?.permissions();
+        let mut perms = fs::metadata(path)?.permissions();
         perms.set_mode(perms.mode() | 0o100);
-        fs::set_permissions(&path, perms)?;
+        fs::set_permissions(path, perms)?;
     }
 
     Ok(())
@@ -80,20 +82,31 @@ fn create_install_path(git_path: &path::Path, install_dir: &str) -> Result<(), e
         unreachable!()
     }; // every .git folder should have a parent.
 
-    let path = path.join(install_dir).join("_");
+    let install_path = path.join(install_dir);
+    let underscore_path = install_path.join("_");
 
-    fs::create_dir_all(&path)?;
+    fs::create_dir_all(&underscore_path)?;
 
     // I've created these assets, they should exist.
     let Some(ref file_data) = Assets::get(ASSETS_HUSKY_SH) else {
         unreachable!()
     };
 
-    let husky_path = path.join(path.join("husky.sh"));
-    let gitignore_path = path.join(path.join(".gitignore"));
+    let Some(ref task_runner_data) = Assets::get(ASSETS_TASK_RUNNER) else {
+        unreachable!()
+    };
+
+    let husky_path = underscore_path.join(underscore_path.join(ASSETS_HUSKY_SH));
+    let gitignore_path = underscore_path.join(underscore_path.join(".gitignore"));
+    let task_runner_path = install_path.join(install_path.join(ASSETS_TASK_RUNNER));
 
     fs::write(&husky_path, &file_data.data)?;
     fs::write(&gitignore_path, "*")?;
+
+    if !task_runner_path.exists() {
+        fs::write(task_runner_path, &task_runner_data.data)?;
+    }
+
 
     set_execute_permissions(&husky_path)?;
 

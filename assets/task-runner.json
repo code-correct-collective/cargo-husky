@@ -1,0 +1,10 @@
+{
+   "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+   "tasks": [
+      {
+         "name": "welcome-message-example",
+         "command": "echo",
+         "args": [ "Cargo Husky is awesome!" ]
+      }
+   ]
+}
