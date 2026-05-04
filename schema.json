@@ -40,7 +40,7 @@
              "type": "string"
            },
            "description": "Array of command arguments. Built-in variables can be used, such as ${staged}, ${git-files}, ${last-commit}",
-           "examples": ["[Not Implemented Yet] ${staged}", "${git-files}", "${last-commit}", "${args}", "${all-files}"]
+           "examples": ["[Variables Not Implemented Yet] ${staged}", "${git-files}", "${last-commit}", "${args}", "${all-files}"]
          },
          "output": {
            "$ref": "#/definitions/outputTypes",
