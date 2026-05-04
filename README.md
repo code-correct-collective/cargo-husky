@@ -14,8 +14,49 @@ Heavy inspiration for this rust port is taken from the great tool [Husky.Net](ht
 - [x] Initial installation of husky settings
 - [x] Uninstallation of the hooks
 - [x] Create default hook
-- [ ] Create task runner
-- [ ] Create way to add conditions to the tasks, so they run on specific scenarios
+- [x] Create task runner
+- [x] Run all tasks
+- [x] Run tasks by group name
+- [x] Run task by name
+- [ ] Task Runner Variables Support variables
+- [ ] Task Output Verbosity
+- [ ] Task Branch Filtering
+- [ ] Task Include/Exclude Regex
+- [ ] Task Filtering rules.
 - [ ] Colorize output
+
+## Installation
+
+Eventually just run (not published yet)
+
+```shell
+cargo install c3-cargo-husky --locked
+```
+
+## Usage
+
+Once `cargo-husky` is installed on your path, install the git hooks:
+
+```shell
+cargo husky install
+```
+
+See the list of your tasks:
+```shell
+cargo husky list
+```
+
+Run all the defined hooks:
+```shell
+cargo husky run
+```
+
+Install your first hook with the following command
+
+```shell
+cargo husky set pre-commit -c "cargo husky run -n welcome-message-example"
+```
+
+
 
 
