@@ -80,6 +80,7 @@ pub fn run_task(task: &Task) -> UnitHuskyResult {
         }
 
         writeln!(io::stdout(), "✔️ task 📋 {} succeeded", task.name)?;
+        Ok(())
     } else {
         let out = String::from_utf8_lossy(&output.stdout);
         let err = String::from_utf8_lossy(&output.stderr);
@@ -93,9 +94,9 @@ pub fn run_task(task: &Task) -> UnitHuskyResult {
         }
 
         writeln!(io::stderr(), "🚫 task 📋 {} failed", task.name)?;
-    }
 
-    Ok(())
+        Err(HuskyError::TaskFailed)
+    }
 }
 
 pub fn run_tasks(tasks: &Vec<&Task>) -> UnitHuskyResult {
@@ -128,7 +129,7 @@ pub fn run_tasks_by_group(tasks: &[Task], group: &str) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn run_task_by_name(tasks: &Vec<Task>, name: &str) -> UnitHuskyResult {
+pub fn run_task_by_name(tasks: &[Task], name: &str) -> UnitHuskyResult {
     let named: Vec<&Task> = tasks
         .iter()
         .filter(|t| t.name.eq_ignore_ascii_case(name))

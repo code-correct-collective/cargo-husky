@@ -4,6 +4,7 @@ pub enum HuskyError {
     Io(std::io::Error),
     InvalidTaskRunnerFile,
     TaskNotFound,
+    TaskFailed,
     Serde(serde_json::Error),
 }
 
