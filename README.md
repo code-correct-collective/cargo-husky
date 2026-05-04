@@ -18,6 +18,7 @@ Heavy inspiration for this rust port is taken from the great tool [Husky.Net](ht
 - [x] Run all tasks
 - [x] Run tasks by group name
 - [x] Run task by name
+- [ ] Task `cwd` support.
 - [ ] Task Runner Variables Support
 - [ ] Task Output Verbosity
 - [ ] Task Branch Filtering
