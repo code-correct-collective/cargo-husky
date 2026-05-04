@@ -69,16 +69,29 @@ pub fn run_task(task: &Task) -> UnitHuskyResult {
 
     if output.status.success() {
         let out = String::from_utf8_lossy(&output.stdout);
+        let err = String::from_utf8_lossy(&output.stderr);
+
         if !out.is_empty() {
             writeln!(io::stdout(), "{}", out)?;
         }
+
+        if !err.is_empty() {
+            writeln!(io::stderr(), "{}", err)?;
+        }
+
         writeln!(io::stdout(), "✔️ task 📋 {} succeeded", task.name)?;
     } else {
         let out = String::from_utf8_lossy(&output.stdout);
+        let err = String::from_utf8_lossy(&output.stderr);
 
         if !out.is_empty() {
-            writeln!(io::stderr(), "{}", out)?;
+            writeln!(io::stdout(), "{}", out)?;
         }
+
+        if !err.is_empty() {
+            writeln!(io::stderr(), "{}", err)?;
+        }
+
         writeln!(io::stderr(), "🚫 task 📋 {} failed", task.name)?;
     }
 
@@ -92,7 +105,7 @@ pub fn run_tasks(tasks: &Vec<&Task>) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn run_tasks_by_group(tasks: &Vec<Task>, group: &str) -> UnitHuskyResult {
+pub fn run_tasks_by_group(tasks: &[Task], group: &str) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
         "⌛ Preparing to run tasks in group 👥 {}",
@@ -122,7 +135,7 @@ pub fn run_task_by_name(tasks: &Vec<Task>, name: &str) -> UnitHuskyResult {
         .collect();
 
     if let Some(t) = named.first() {
-        return run_task(t);
+        run_task(t)
     } else {
         write_task_header(name)?;
 

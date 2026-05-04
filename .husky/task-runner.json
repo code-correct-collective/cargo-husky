@@ -16,14 +16,13 @@
          "name": "cargo-clippy",
          "group": "pre-commit",
          "command": "cargo",
-         "args": [ "clippy" ]
+         "args": [ "clippy", "--", "-Dwarnings" ]
       },
       {
          "name": "cargo-fmt-verify",
          "group": "pre-commit",
          "command": "cargo",
-         "args": [ "fmt", "--check" ]
+         "args": [ "fmt", "--all", "--check" ]
       }
-
    ]
 }
