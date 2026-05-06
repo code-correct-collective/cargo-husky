@@ -92,6 +92,7 @@ pub fn set_hook(hook_name: &str, command: &str) -> UnitHuskyResult {
     writeln!(io::stdout(), "✔️ {} hook updated", hook_name)?;
     Ok(())
 }
+
 pub fn list() -> UnitHuskyResult {
     let repository = utils::open_repository()?;
     let task_list_file = utils::get_husky_path(&repository)?.join(ASSETS_TASK_RUNNER);
