@@ -9,13 +9,17 @@ use std::io::{self, Write};
 use crate::cli::RunArgs;
 use crate::husky::repository::HuskyRepository;
 use crate::husky::task_runner::TaskList;
-use crate::husky::utils::{ASSETS_TASK_RUNNER, UnitHuskyResult};
+use crate::husky::utils::{ASSETS_TASK_RUNNER, HuskyFilesystemManager, UnitHuskyResult};
 
-pub fn install(directory: &str, repository: &dyn HuskyRepository) -> UnitHuskyResult {
+pub fn install(
+    directory: &str,
+    repository: &dyn HuskyRepository,
+    file_manager: &dyn HuskyFilesystemManager,
+) -> UnitHuskyResult {
     writeln!(io::stdout(), "⚡ Installing husky to {}..", &directory)?;
 
     let underscore_path =
-        utils::create_install_path(repository.get_repository_root_path()?, directory)?;
+        file_manager.create_install_path(repository.get_repository_root_path()?, directory)?;
 
     repository.set_hook_path(directory)?;
 
@@ -23,13 +27,13 @@ pub fn install(directory: &str, repository: &dyn HuskyRepository) -> UnitHuskyRe
         unreachable!()
     };
 
-    let husky_path = utils::write_asset_file(&underscore_path, utils::ASSETS_HUSKY_SH)?;
-    utils::write_asset_file(install_path, utils::ASSETS_TASK_RUNNER)?;
+    let husky_path = file_manager.write_asset_file(&underscore_path, utils::ASSETS_HUSKY_SH)?;
+    file_manager.write_asset_file(install_path, utils::ASSETS_TASK_RUNNER)?;
 
     let gitignore_path = underscore_path.join(underscore_path.join(".gitignore"));
-    utils::write_file(&gitignore_path, "*")?;
+    file_manager.write_file(&gitignore_path, "*")?;
 
-    utils::set_execute_permissions(&husky_path)?;
+    file_manager.set_execute_permissions(&husky_path)?;
 
     writeln!(io::stdout(), "✔️ Husky installed")?;
 
@@ -66,6 +70,7 @@ pub fn set_hook(
     hook_name: &str,
     command: &str,
     repository: &dyn HuskyRepository,
+    file_manager: &dyn HuskyFilesystemManager,
 ) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
@@ -76,10 +81,10 @@ pub fn set_hook(
 
     let install_path = repository.get_husky_path()?;
 
-    utils::write_asset_filename(&install_path, hook_name, utils::ASSETS_HOOK)?;
+    file_manager.write_asset_filename(&install_path, hook_name, utils::ASSETS_HOOK)?;
 
     let hook_path = install_path.join(hook_name);
-    utils::set_execute_permissions(&hook_path)?;
+    file_manager.set_execute_permissions(&hook_path)?;
 
     if !command.trim().is_empty() {
         let command = format!("{}\n", command.trim());
