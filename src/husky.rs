@@ -1,4 +1,5 @@
 pub mod error;
+pub mod filesystem_manager;
 pub mod repository;
 pub mod task_runner;
 pub mod utils;
@@ -7,14 +8,15 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
+use crate::husky::filesystem_manager::HuskyFilesystemManager;
 use crate::husky::repository::HuskyRepository;
 use crate::husky::task_runner::TaskList;
-use crate::husky::utils::{ASSETS_TASK_RUNNER, HuskyFilesystemManager, UnitHuskyResult};
+use crate::husky::utils::{ASSETS_TASK_RUNNER, UnitHuskyResult};
 
 pub fn install(
     directory: &str,
-    repository: &dyn HuskyRepository,
-    file_manager: &dyn HuskyFilesystemManager,
+    repository: &impl HuskyRepository,
+    file_manager: &impl HuskyFilesystemManager,
 ) -> UnitHuskyResult {
     writeln!(io::stdout(), "⚡ Installing husky to {}..", &directory)?;
 
@@ -40,7 +42,7 @@ pub fn install(
     Ok(())
 }
 
-pub fn uninstall(repository: &dyn HuskyRepository) -> UnitHuskyResult {
+pub fn uninstall(repository: &impl HuskyRepository) -> UnitHuskyResult {
     let directory = repository.get_husky_path()?;
 
     writeln!(
@@ -69,8 +71,8 @@ pub fn uninstall(repository: &dyn HuskyRepository) -> UnitHuskyResult {
 pub fn set_hook(
     hook_name: &str,
     command: &str,
-    repository: &dyn HuskyRepository,
-    file_manager: &dyn HuskyFilesystemManager,
+    repository: &impl HuskyRepository,
+    file_manager: &impl HuskyFilesystemManager,
 ) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
@@ -99,7 +101,7 @@ pub fn set_hook(
     Ok(())
 }
 
-pub fn list(repository: &dyn HuskyRepository) -> UnitHuskyResult {
+pub fn list(repository: &impl HuskyRepository) -> UnitHuskyResult {
     let task_list_file = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
 
     let task_list = TaskList::open(task_list_file.as_path())?;
@@ -109,7 +111,7 @@ pub fn list(repository: &dyn HuskyRepository) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn run(args: &RunArgs, repository: &dyn HuskyRepository) -> UnitHuskyResult {
+pub fn run(args: &RunArgs, repository: &impl HuskyRepository) -> UnitHuskyResult {
     let install_path = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
     let task_list = TaskList::open(install_path.as_path())?;
 
