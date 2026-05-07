@@ -4,7 +4,6 @@ pub mod repository;
 pub mod task_runner;
 pub mod utils;
 
-use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
@@ -42,7 +41,10 @@ pub fn install(
     Ok(())
 }
 
-pub fn uninstall(repository: &impl HuskyRepository) -> UnitHuskyResult {
+pub fn uninstall(
+    repository: &impl HuskyRepository,
+    file_manager: &impl HuskyFilesystemManager,
+) -> UnitHuskyResult {
     let directory = repository.get_husky_path()?;
 
     writeln!(
@@ -55,12 +57,12 @@ pub fn uninstall(repository: &impl HuskyRepository) -> UnitHuskyResult {
 
     let path = git_parent.join(directory);
 
-    if !fs::exists(&path)? {
+    if !file_manager.exists(&path)? {
         writeln!(io::stdout(), "⚠️ Husky already removed")?;
         return Ok(()); // nothing to delete
     }
 
-    fs::remove_dir_all(&path)?;
+    file_manager.remove_dir_all(&path)?;
     repository.remove_hook_path()?;
 
     writeln!(io::stdout(), "✔️ Husky removed")?;
@@ -90,10 +92,7 @@ pub fn set_hook(
 
     if !command.trim().is_empty() {
         let command = format!("{}\n", command.trim());
-
-        let mut hook_file = OpenOptions::new().append(true).open(hook_path)?;
-
-        hook_file.write_all(command.as_bytes())?;
+        file_manager.write_hook_file(&hook_path, &command)?;
     }
 
     writeln!(io::stdout(), "✔️ {} hook updated", hook_name)?;
