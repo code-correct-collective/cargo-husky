@@ -1,9 +1,9 @@
 use std::{
-    fs, path::{Path, PathBuf}
+    fs,
+    path::{Path, PathBuf},
 };
 
 use crate::husky::error::HuskyError;
-use git2::{Repository, RepositoryOpenFlags};
 use rust_embed::Embed;
 
 #[derive(Embed)]
@@ -17,70 +17,7 @@ pub const DEFAULT_DIRECTORY: &str = ".husky";
 pub const ASSETS_HUSKY_SH: &str = "husky.sh";
 pub const ASSETS_TASK_RUNNER: &str = "task-runner.json";
 pub const ASSETS_HOOK: &str = "hook";
-pub const HOOKS_PATH: &str = "core.hooksPath";
-
-pub trait HuskyRepository {
-
-    fn open_repository() -> HuskyResult<Self>
-        where Self: Sized;
-    fn get_husky_path(&self) -> HuskyResult<PathBuf>;
-    fn set_hook_path(&self, directory: &str) -> UnitHuskyResult;
-    fn remove_hook_path(&self) -> UnitHuskyResult;
-    fn get_repository_root_path(&self) -> HuskyResult<&Path>;
-}
-
-pub struct GitRepository {
-    repository: Repository
-}
-
-impl HuskyRepository for GitRepository {
-    fn open_repository() -> HuskyResult<Self> {
-        let repository = Repository::open_ext(
-            ".", 
-            RepositoryOpenFlags::empty(), 
-            &[] as &[&std::ffi::OsStr])?;
-
-        Ok(GitRepository {
-            repository
-        })
-    }
-
-    fn get_husky_path(&self) -> HuskyResult<PathBuf> {
-        let config = self.repository.config()?;
-        
-        let install_segment = config.get_str(HOOKS_PATH).unwrap_or(DEFAULT_DIRECTORY);
-
-        let Some(path) = self.repository.path().parent() else {
-            unreachable!();
-        };
-        
-        Ok(path.join(install_segment))
-    }
-
-    fn set_hook_path(&self, directory: &str) -> UnitHuskyResult {
-        let mut config = self.repository.config()?;
-
-        config.set_str(HOOKS_PATH, directory)?;
-        Ok(())
-
-    }
-
-    fn remove_hook_path(&self) -> UnitHuskyResult {
-        let mut config = self.repository.config()?;
-
-        config.remove(HOOKS_PATH)?;
-        Ok(())
-    }
-
-    fn get_repository_root_path(&self) -> HuskyResult<&Path> {
-
-        let Some(path) = self.repository.path().parent() else {
-            unreachable!()
-        }; // every .git folder should have a parent.
-
-        Ok(path)
-    }
-}
+pub const GIT_CONFIG_HOOKS_PATH: &str = "core.hooksPath";
 
 pub fn write_asset_file(directory: &Path, asset_name: &str) -> HuskyResult<PathBuf> {
     write_asset_filename(directory, asset_name, asset_name)
@@ -126,12 +63,12 @@ pub fn set_execute_permissions(path: &Path) -> UnitHuskyResult {
 }
 
 pub fn create_install_path(git_path: &Path, install_dir: &str) -> HuskyResult<PathBuf> {
-    let Some(path) = git_path.parent() else {
-        unreachable!()
-    }; // every .git folder should have a parent.
-
-    let install_path = path.join(install_dir);
+    dbg!(&git_path);
+    dbg!(&install_dir);
+    let install_path = git_path.join(install_dir);
     let underscore_path = install_path.join("_");
+
+    dbg!(&underscore_path);
 
     fs::create_dir_all(&underscore_path)?;
 

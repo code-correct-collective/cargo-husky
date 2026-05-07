@@ -1,5 +1,4 @@
-use c3_cargo_husky::husky::utils::GitRepository;
-use c3_cargo_husky::husky::utils::HuskyRepository;
+use c3_cargo_husky::husky::repository::{GitRepository, HuskyRepository};
 use clap::Parser;
 
 use c3_cargo_husky::cli;
@@ -10,7 +9,7 @@ fn main() -> Result<(), error::HuskyError> {
     let args = cli::HuskyArgs::parse();
 
     let repository = GitRepository::open_repository()?;
-    
+
     match args.command {
         cli::Commands::Install(ref args) => husky::install(&args.directory, &repository),
         cli::Commands::Uninstall => husky::uninstall(&repository),

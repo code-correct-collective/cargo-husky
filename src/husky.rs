@@ -1,4 +1,5 @@
 pub mod error;
+pub mod repository;
 pub mod task_runner;
 pub mod utils;
 
@@ -6,13 +7,15 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
+use crate::husky::repository::HuskyRepository;
 use crate::husky::task_runner::TaskList;
-use crate::husky::utils::{ASSETS_TASK_RUNNER, HuskyRepository, UnitHuskyResult};
+use crate::husky::utils::{ASSETS_TASK_RUNNER, UnitHuskyResult};
 
 pub fn install(directory: &str, repository: &dyn HuskyRepository) -> UnitHuskyResult {
     writeln!(io::stdout(), "⚡ Installing husky to {}..", &directory)?;
 
-    let underscore_path = utils::create_install_path(repository.get_repository_root_path()?, directory)?;
+    let underscore_path =
+        utils::create_install_path(repository.get_repository_root_path()?, directory)?;
 
     repository.set_hook_path(directory)?;
 
@@ -59,7 +62,11 @@ pub fn uninstall(repository: &dyn HuskyRepository) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn set_hook(hook_name: &str, command: &str, repository: &dyn HuskyRepository) -> UnitHuskyResult {
+pub fn set_hook(
+    hook_name: &str,
+    command: &str,
+    repository: &dyn HuskyRepository,
+) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
         "🛠️ Setting the command {} on the {} hook.",
