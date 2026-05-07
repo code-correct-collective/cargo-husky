@@ -1,22 +1,20 @@
 pub mod error;
 pub mod task_runner;
-mod utils;
+pub mod utils;
 
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
 use crate::husky::task_runner::TaskList;
-use crate::husky::utils::{ASSETS_TASK_RUNNER, UnitHuskyResult};
+use crate::husky::utils::{ASSETS_TASK_RUNNER, HuskyRepository, UnitHuskyResult};
 
-pub fn install(directory: &str) -> UnitHuskyResult {
+pub fn install(directory: &str, repository: &dyn HuskyRepository) -> UnitHuskyResult {
     writeln!(io::stdout(), "⚡ Installing husky to {}..", &directory)?;
-    let repository = utils::open_repository()?;
 
-    let underscore_path = utils::create_install_path(repository.path(), directory)?;
-    let mut config = repository.config()?;
+    let underscore_path = utils::create_install_path(repository.get_repository_root_path()?, directory)?;
 
-    config.set_str(utils::HOOKS_PATH, directory)?;
+    repository.set_hook_path(directory)?;
 
     let Some(install_path) = underscore_path.parent() else {
         unreachable!()
@@ -35,11 +33,8 @@ pub fn install(directory: &str) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn uninstall() -> UnitHuskyResult {
-    let repository = utils::open_repository()?;
-    let mut config = repository.config()?;
-    // let directory = config.get_str(HOOKS_PATH).unwrap_or(DEFAULT_DIRECTORY);
-    let directory = utils::get_husky_path(&repository)?;
+pub fn uninstall(repository: &dyn HuskyRepository) -> UnitHuskyResult {
+    let directory = repository.get_husky_path()?;
 
     writeln!(
         io::stdout(),
@@ -47,9 +42,7 @@ pub fn uninstall() -> UnitHuskyResult {
         directory.display()
     )?;
 
-    let Some(git_parent) = repository.path().parent() else {
-        unreachable!()
-    };
+    let git_parent = repository.get_repository_root_path()?;
 
     let path = git_parent.join(directory);
 
@@ -59,14 +52,14 @@ pub fn uninstall() -> UnitHuskyResult {
     }
 
     fs::remove_dir_all(&path)?;
-    config.remove(utils::HOOKS_PATH)?;
+    repository.remove_hook_path()?;
 
     writeln!(io::stdout(), "✔️ Husky removed")?;
 
     Ok(())
 }
 
-pub fn set_hook(hook_name: &str, command: &str) -> UnitHuskyResult {
+pub fn set_hook(hook_name: &str, command: &str, repository: &dyn HuskyRepository) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
         "🛠️ Setting the command {} on the {} hook.",
@@ -74,8 +67,7 @@ pub fn set_hook(hook_name: &str, command: &str) -> UnitHuskyResult {
         hook_name
     )?;
 
-    let repository = utils::open_repository()?;
-    let install_path = utils::get_husky_path(&repository)?;
+    let install_path = repository.get_husky_path()?;
 
     utils::write_asset_filename(&install_path, hook_name, utils::ASSETS_HOOK)?;
 
@@ -89,13 +81,14 @@ pub fn set_hook(hook_name: &str, command: &str) -> UnitHuskyResult {
 
         hook_file.write_all(command.as_bytes())?;
     }
+
     writeln!(io::stdout(), "✔️ {} hook updated", hook_name)?;
+
     Ok(())
 }
 
-pub fn list() -> UnitHuskyResult {
-    let repository = utils::open_repository()?;
-    let task_list_file = utils::get_husky_path(&repository)?.join(ASSETS_TASK_RUNNER);
+pub fn list(repository: &dyn HuskyRepository) -> UnitHuskyResult {
+    let task_list_file = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
 
     let task_list = TaskList::open(task_list_file.as_path())?;
 
@@ -104,9 +97,8 @@ pub fn list() -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn run(args: &RunArgs) -> UnitHuskyResult {
-    let repository = utils::open_repository()?;
-    let install_path = utils::get_husky_path(&repository)?.join(ASSETS_TASK_RUNNER);
+pub fn run(args: &RunArgs, repository: &dyn HuskyRepository) -> UnitHuskyResult {
+    let install_path = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
     let task_list = TaskList::open(install_path.as_path())?;
 
     match (&args.name, &args.group) {
