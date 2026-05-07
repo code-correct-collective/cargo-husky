@@ -1,0 +1,22 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+## husky task runner examples -------------------
+## Note : for non-local installation use 'cargo-husky' that must be on the path. e.g. 'cargo-husky'
+
+## run all tasks
+#cargo husky run
+
+### run all tasks with group: 'group-name'
+#cargo husky run --group group-name
+
+## run task with name: 'task-name'
+#cargo husky run --name task-name
+
+## pass hook arguments to task
+#cargo husky run --args "$1" "$2"
+
+## or put your custom commands -------------------
+#echo 'c3-cargo-husky is awesome!'
+
+cargo run --quiet -- run -g pre-push

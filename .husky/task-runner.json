@@ -23,6 +23,12 @@
          "group": "pre-commit",
          "command": "cargo",
          "args": [ "fmt", "--all", "--check" ]
+      },
+      {
+         "name": "cargo-test",
+         "group": "pre-push",
+         "command": "cargo",
+         "args": [ "test" ]
       }
    ]
 }

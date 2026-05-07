@@ -78,7 +78,7 @@ pub fn set_hook(
 ) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
-        "🛠️ Setting the command {} on the {} hook.",
+        "🛠️ Setting the command '{}' on the {} hook.",
         command,
         hook_name
     )?;
@@ -105,9 +105,7 @@ pub fn list(repository: &impl HuskyRepository) -> UnitHuskyResult {
 
     let task_list = TaskList::open(task_list_file.as_path())?;
 
-    task_runner::display_tasks(&task_list)?;
-
-    Ok(())
+    task_runner::display_tasks(&task_list)
 }
 
 pub fn run(args: &RunArgs, repository: &impl HuskyRepository) -> UnitHuskyResult {

@@ -16,7 +16,7 @@ fn main() -> Result<(), error::HuskyError> {
         cli::Commands::Install(ref args) => {
             husky::install(&args.directory, &repository, &file_manager)
         }
-        cli::Commands::Uninstall => husky::uninstall(&repository, &file_manager), // need file_manager
+        cli::Commands::Uninstall => husky::uninstall(&repository, &file_manager),
         cli::Commands::Set(ref args) => {
             husky::set_hook(&args.hook, &args.command, &repository, &file_manager)
         }
