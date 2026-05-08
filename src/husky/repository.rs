@@ -1,9 +1,16 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use git2::{Repository, RepositoryOpenFlags};
 
-use crate::husky::utils::{DEFAULT_DIRECTORY, GIT_CONFIG_HOOKS_PATH, HuskyResult, UnitHuskyResult};
+#[cfg(test)]
+use mockall::automock;
 
+use crate::husky::error::{HuskyResult, UnitHuskyResult};
+
+const DEFAULT_DIRECTORY: &str = ".husky";
+const GIT_CONFIG_HOOKS_PATH: &str = "core.hooksPath";
+
+#[cfg_attr(test, automock)]
 pub trait HuskyRepository {
     fn open_repository() -> HuskyResult<Self>
     where
@@ -11,7 +18,7 @@ pub trait HuskyRepository {
     fn get_husky_path(&self) -> HuskyResult<PathBuf>;
     fn set_hook_path(&self, directory: &str) -> UnitHuskyResult;
     fn remove_hook_path(&self) -> UnitHuskyResult;
-    fn get_repository_root_path(&self) -> HuskyResult<&Path>;
+    fn get_repository_root_path(&self) -> HuskyResult<PathBuf>;
 }
 
 pub struct GitRepository {
@@ -57,11 +64,11 @@ impl HuskyRepository for GitRepository {
         Ok(())
     }
 
-    fn get_repository_root_path(&self) -> HuskyResult<&Path> {
+    fn get_repository_root_path(&self) -> HuskyResult<PathBuf> {
         let Some(path) = self.repository.path().parent() else {
             unreachable!()
         }; // every .git folder should have a parent.
 
-        Ok(path)
+        Ok(path.to_path_buf())
     }
 }

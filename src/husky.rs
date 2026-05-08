@@ -2,15 +2,18 @@ pub mod error;
 pub mod filesystem_manager;
 pub mod repository;
 pub mod task_runner;
-pub mod utils;
 
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
+use crate::husky::error::UnitHuskyResult;
 use crate::husky::filesystem_manager::HuskyFilesystemManager;
 use crate::husky::repository::HuskyRepository;
 use crate::husky::task_runner::TaskList;
-use crate::husky::utils::{ASSETS_TASK_RUNNER, UnitHuskyResult};
+
+const ASSETS_HOOK: &str = "hook";
+const ASSETS_TASK_RUNNER: &str = "task-runner.json";
+const ASSETS_HUSKY_SH: &str = "husky.sh";
 
 pub fn install(
     directory: &str,
@@ -20,7 +23,7 @@ pub fn install(
     writeln!(io::stdout(), "⚡ Installing husky to {}..", &directory)?;
 
     let underscore_path =
-        file_manager.create_install_path(repository.get_repository_root_path()?, directory)?;
+        file_manager.create_install_path(&repository.get_repository_root_path()?, directory)?;
 
     repository.set_hook_path(directory)?;
 
@@ -28,8 +31,8 @@ pub fn install(
         unreachable!()
     };
 
-    let husky_path = file_manager.write_asset_file(&underscore_path, utils::ASSETS_HUSKY_SH)?;
-    file_manager.write_asset_file(install_path, utils::ASSETS_TASK_RUNNER)?;
+    let husky_path = file_manager.write_asset_file(&underscore_path, ASSETS_HUSKY_SH)?;
+    file_manager.write_asset_file(install_path, ASSETS_TASK_RUNNER)?;
 
     let gitignore_path = underscore_path.join(underscore_path.join(".gitignore"));
     file_manager.write_file(&gitignore_path, "*")?;
@@ -85,7 +88,7 @@ pub fn set_hook(
 
     let install_path = repository.get_husky_path()?;
 
-    file_manager.write_asset_filename(&install_path, hook_name, utils::ASSETS_HOOK)?;
+    file_manager.write_asset_filename(&install_path, hook_name, ASSETS_HOOK)?;
 
     let hook_path = install_path.join(hook_name);
     file_manager.set_execute_permissions(&hook_path)?;
@@ -119,4 +122,12 @@ pub fn run(args: &RunArgs, repository: &impl HuskyRepository) -> UnitHuskyResult
     };
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    pub fn silly_test() {
+        assert!(true == true)
+    }
 }

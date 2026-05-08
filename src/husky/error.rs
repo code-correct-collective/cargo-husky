@@ -1,3 +1,6 @@
+pub type HuskyResult<T> = Result<T, HuskyError>;
+pub type UnitHuskyResult = HuskyResult<()>;
+
 #[derive(Debug)]
 pub enum HuskyError {
     Git(git2::Error),

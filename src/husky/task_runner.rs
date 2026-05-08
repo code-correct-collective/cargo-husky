@@ -7,7 +7,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::husky::{error::HuskyError, utils::UnitHuskyResult};
+use crate::husky::error::{HuskyError, UnitHuskyResult};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Task {

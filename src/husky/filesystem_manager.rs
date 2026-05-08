@@ -4,14 +4,18 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[cfg(test)]
+use mockall::automock;
+
 use rust_embed::Embed;
 
-use crate::husky::utils::{HuskyResult, UnitHuskyResult};
+use crate::husky::error::{HuskyResult, UnitHuskyResult};
 
 #[derive(Embed)]
 #[folder = "assets"]
 struct Assets;
 
+#[cfg_attr(test, automock)]
 pub trait HuskyFilesystemManager {
     fn write_asset_file(&self, directory: &Path, asset_name: &str) -> HuskyResult<PathBuf>;
     fn write_asset_filename(
