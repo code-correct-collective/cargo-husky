@@ -11,5 +11,5 @@ pub fn list_task_actions() {
         .returning(|| Ok(PathBuf::from(".husky/task_runner.json")));
 
     let r = mock_repo.get_husky_path().unwrap();
-    assert_eq!(r, PathBuf::from(".husky"))
+    assert_eq!(r, PathBuf::from(".husky/task_runner.json"))
 }
