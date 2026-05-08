@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 description = "A cargo sub-command to manage git hooks, execute hook scripts and run defined tasks."
 authors = [ "Geoff Horsey" ]
-license = "MIT"
 license-file="LICENSE"
 repository = "https://github.com/code-correct-collective/cargo-husky"
 readme = "README.md"

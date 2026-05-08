@@ -1,19 +1,24 @@
 use std::{
     fs,
     io::{self, Write},
-    path::Path,
+    path::{Path, PathBuf},
     process::Command,
+    rc::Rc,
 };
 
 use serde::{Deserialize, Serialize};
 
-use crate::husky::error::{HuskyError, UnitHuskyResult};
+use crate::husky::{
+    error::{HuskyError, UnitHuskyResult},
+    filesystem_manager::HuskyFilesystemManager,
+};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Task {
-    pub name: String,
-    pub group: Option<String>,
-    pub command: String,
+    pub name: Rc<str>,
+    pub group: Option<Rc<str>>,
+    pub command: Rc<str>,
+    pub cwd: Option<Rc<str>>,
     pub args: Option<Vec<String>>,
 }
 
@@ -25,8 +30,11 @@ pub struct TaskList {
 }
 
 impl TaskList {
-    pub fn open(path: &Path) -> Result<TaskList, HuskyError> {
-        if !fs::exists(path).unwrap_or(false) {
+    pub fn open(
+        path: &Path,
+        filesystem_manager: &impl HuskyFilesystemManager,
+    ) -> Result<TaskList, HuskyError> {
+        if !filesystem_manager.exists(path).unwrap_or(false) {
             return Err(HuskyError::InvalidTaskRunnerFile);
         }
 
@@ -48,7 +56,7 @@ pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
     for task in &task_list.tasks {
         let group = match &task.group {
             Some(g) => g.clone(),
-            None => "[Unspecified]".to_string(),
+            None => "[Unspecified]".into(),
         };
 
         writeln!(io::stdout(), "📋 {} 👥 {}", task.name, group)?;
@@ -59,10 +67,14 @@ pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
 pub fn run_task(task: &Task) -> UnitHuskyResult {
     write_task_header(&task.name)?;
 
-    let mut command = Command::new(&task.command);
+    let mut command = Command::new(&*task.command);
 
     if let Some(args) = &task.args {
         command.args(args);
+    }
+
+    if let Some(cwd) = &task.cwd {
+        command.current_dir(PathBuf::from(cwd as &str));
     }
 
     let output = command.output()?;

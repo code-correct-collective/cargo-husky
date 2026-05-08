@@ -106,17 +106,24 @@ pub fn set_hook(
     Ok(())
 }
 
-pub fn list(repository: &impl HuskyRepository) -> UnitHuskyResult {
+pub fn list(
+    repository: &impl HuskyRepository,
+    file_manager: &impl HuskyFilesystemManager,
+) -> UnitHuskyResult {
     let task_list_file = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
 
-    let task_list = TaskList::open(task_list_file.as_path())?;
+    let task_list = TaskList::open(task_list_file.as_path(), file_manager)?;
 
     task_runner::display_tasks(&task_list)
 }
 
-pub fn run(args: &RunArgs, repository: &impl HuskyRepository) -> UnitHuskyResult {
+pub fn run(
+    args: &RunArgs,
+    repository: &impl HuskyRepository,
+    file_manager: &impl HuskyFilesystemManager,
+) -> UnitHuskyResult {
     let install_path = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
-    let task_list = TaskList::open(install_path.as_path())?;
+    let task_list = TaskList::open(install_path.as_path(), file_manager)?;
 
     match (&args.name, &args.group) {
         (None, None) => task_runner::run_tasks(&task_list.tasks.iter().collect())?,
