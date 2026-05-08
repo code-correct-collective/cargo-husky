@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use c3_cargo_husky::husky::filesystem_manager::LocalFilesystem;
 use c3_cargo_husky::husky::repository::{GitRepository, HuskyRepository};
 use c3_cargo_husky::husky::task_runner::HuskyTaskRunner;
