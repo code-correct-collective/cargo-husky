@@ -2,14 +2,14 @@ use std::{
     fs,
     io::{self, Write},
     path::{Path, PathBuf},
-    process::Command,
+    process::{Command, Output},
     rc::Rc,
 };
 
 use serde::{Deserialize, Serialize};
 
 use crate::husky::{
-    error::{HuskyError, UnitHuskyResult},
+    error::{HuskyError, HuskyResult, UnitHuskyResult},
     filesystem_manager::HuskyFilesystemManager,
 };
 
@@ -20,6 +20,28 @@ pub struct Task {
     pub command: Rc<str>,
     pub cwd: Option<Rc<str>>,
     pub args: Option<Vec<String>>,
+}
+
+pub trait TaskRunner {
+    fn run(&self, task: &Task) -> HuskyResult<Output>;
+}
+
+pub struct HuskyTaskRunner;
+
+impl TaskRunner for HuskyTaskRunner {
+    fn run(&self, task: &Task) -> HuskyResult<Output> {
+        let mut command = Command::new(&*task.command);
+
+        if let Some(args) = &task.args {
+            command.args(args);
+        }
+
+        if let Some(cwd) = &task.cwd {
+            command.current_dir(PathBuf::from(cwd as &str));
+        }
+
+        Ok(command.output()?)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -33,7 +55,7 @@ impl TaskList {
     pub fn open(
         path: &Path,
         filesystem_manager: &impl HuskyFilesystemManager,
-    ) -> Result<TaskList, HuskyError> {
+    ) -> HuskyResult<TaskList> {
         if !filesystem_manager.exists(path).unwrap_or(false) {
             return Err(HuskyError::InvalidTaskRunnerFile);
         }
@@ -64,20 +86,21 @@ pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn run_task(task: &Task) -> UnitHuskyResult {
+pub fn run_task(task: &Task, task_runner: &impl TaskRunner) -> UnitHuskyResult {
     write_task_header(&task.name)?;
 
-    let mut command = Command::new(&*task.command);
-
-    if let Some(args) = &task.args {
-        command.args(args);
-    }
-
-    if let Some(cwd) = &task.cwd {
-        command.current_dir(PathBuf::from(cwd as &str));
-    }
-
-    let output = command.output()?;
+    // let mut command = Command::new(&*task.command);
+    //
+    // if let Some(args) = &task.args {
+    //     command.args(args);
+    // }
+    //
+    // if let Some(cwd) = &task.cwd {
+    //     command.current_dir(PathBuf::from(cwd as &str));
+    // }
+    //
+    // let output = command.output()?;
+    let output = task_runner.run(task)?;
 
     if output.status.success() {
         let out = String::from_utf8_lossy(&output.stdout);
@@ -111,14 +134,18 @@ pub fn run_task(task: &Task) -> UnitHuskyResult {
     }
 }
 
-pub fn run_tasks(tasks: &Vec<&Task>) -> UnitHuskyResult {
+pub fn run_tasks(tasks: &Vec<&Task>, task_runner: &impl TaskRunner) -> UnitHuskyResult {
     for task in tasks {
-        run_task(task)?;
+        run_task(task, task_runner)?;
     }
     Ok(())
 }
 
-pub fn run_tasks_by_group(tasks: &[Task], group: &str) -> UnitHuskyResult {
+pub fn run_tasks_by_group(
+    tasks: &[Task],
+    group: &str,
+    task_runner: &impl TaskRunner,
+) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
         "⌛ Preparing to run tasks in group 👥 {}",
@@ -136,19 +163,23 @@ pub fn run_tasks_by_group(tasks: &[Task], group: &str) -> UnitHuskyResult {
         writeln!(io::stdout(), "⚠️ Group 👥 {} was not found", group)?;
     }
 
-    run_tasks(&groups)?;
+    run_tasks(&groups, task_runner)?;
 
     Ok(())
 }
 
-pub fn run_task_by_name(tasks: &[Task], name: &str) -> UnitHuskyResult {
+pub fn run_task_by_name(
+    tasks: &[Task],
+    name: &str,
+    task_runner: &impl TaskRunner,
+) -> UnitHuskyResult {
     let named: Vec<&Task> = tasks
         .iter()
         .filter(|t| t.name.eq_ignore_ascii_case(name))
         .collect();
 
     if let Some(t) = named.first() {
-        run_task(t)
+        run_task(t, task_runner)
     } else {
         write_task_header(name)?;
 

@@ -12,7 +12,7 @@ use crate::cli::RunArgs;
 use crate::husky::error::UnitHuskyResult;
 use crate::husky::filesystem_manager::HuskyFilesystemManager;
 use crate::husky::repository::HuskyRepository;
-use crate::husky::task_runner::TaskList;
+use crate::husky::task_runner::{TaskList, TaskRunner};
 
 const ASSETS_HOOK: &str = "hook";
 const ASSETS_TASK_RUNNER: &str = "task-runner.json";
@@ -121,14 +121,15 @@ pub fn run(
     args: &RunArgs,
     repository: &impl HuskyRepository,
     file_manager: &impl HuskyFilesystemManager,
+    task_runner: &impl TaskRunner,
 ) -> UnitHuskyResult {
     let install_path = repository.get_husky_path()?.join(ASSETS_TASK_RUNNER);
     let task_list = TaskList::open(install_path.as_path(), file_manager)?;
 
     match (&args.name, &args.group) {
-        (None, None) => task_runner::run_tasks(&task_list.tasks.iter().collect())?,
-        (Some(name), _) => task_runner::run_task_by_name(&task_list.tasks, name)?,
-        (_, Some(group)) => task_runner::run_tasks_by_group(&task_list.tasks, group)?,
+        (None, None) => task_runner::run_tasks(&task_list.tasks.iter().collect(), task_runner)?,
+        (Some(name), _) => task_runner::run_task_by_name(&task_list.tasks, name, task_runner)?,
+        (_, Some(group)) => task_runner::run_tasks_by_group(&task_list.tasks, group, task_runner)?,
     };
 
     Ok(())
