@@ -28,4 +28,5 @@ impl From<serde_json::Error> for HuskyError {
         HuskyError::Serde(value)
     }
 }
+
 // todo: implement Display

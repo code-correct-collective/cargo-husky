@@ -3,6 +3,9 @@ pub mod filesystem_manager;
 pub mod repository;
 pub mod task_runner;
 
+#[cfg(test)]
+mod tests;
+
 use std::io::{self, Write};
 
 use crate::cli::RunArgs;
@@ -122,12 +125,4 @@ pub fn run(args: &RunArgs, repository: &impl HuskyRepository) -> UnitHuskyResult
     };
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    pub fn silly_test() {
-        assert!(true == true)
-    }
 }
