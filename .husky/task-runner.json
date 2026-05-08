@@ -29,6 +29,12 @@
          "group": "pre-push",
          "command": "cargo",
          "args": [ "test" ]
+      },
+      {
+         "name": "cargo-audit",
+         "group": "pre-push",
+         "command": "cargo",
+         "args": [ "audit" ]
       }
    ]
 }
