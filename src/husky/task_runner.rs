@@ -89,17 +89,6 @@ pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
 pub fn run_task(task: &Task, task_runner: &impl TaskRunner) -> UnitHuskyResult {
     write_task_header(&task.name)?;
 
-    // let mut command = Command::new(&*task.command);
-    //
-    // if let Some(args) = &task.args {
-    //     command.args(args);
-    // }
-    //
-    // if let Some(cwd) = &task.cwd {
-    //     command.current_dir(PathBuf::from(cwd as &str));
-    // }
-    //
-    // let output = command.output()?;
     let output = task_runner.run(task)?;
 
     if output.status.success() {
