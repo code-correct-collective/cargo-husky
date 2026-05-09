@@ -40,6 +40,7 @@ Install your first hook with the following command
 ```shell
 cargo husky set pre-commit -c "cargo husky run -n welcome-message-example"
 ```
+
 ## TODOs:
 
 - [x] Initial installation of husky settings
