@@ -9,23 +9,6 @@ This will configure the git hooks that leverage the task runner.
 
 Heavy inspiration for this rust port is taken from the great tool [Husky.Net](https://github.com/alirezanet/husky.net)
 
-## TODOs:
-
-- [x] Initial installation of husky settings
-- [x] Uninstallation of the hooks
-- [x] Create default hook
-- [x] Create task runner
-- [x] Run all tasks
-- [x] Run tasks by group name
-- [x] Run task by name
-- [ ] Task `cwd` support.
-- [ ] Task Runner Variables Support
-- [ ] Task Output Verbosity
-- [ ] Task Branch Filtering
-- [ ] Task Include/Exclude Regex
-- [ ] Task Filtering rules.
-- [ ] Colorize output
-
 ## Installation
 
 Eventually just run (not published yet)
@@ -57,6 +40,23 @@ Install your first hook with the following command
 ```shell
 cargo husky set pre-commit -c "cargo husky run -n welcome-message-example"
 ```
+## TODOs:
+
+- [x] Initial installation of husky settings
+- [x] Uninstallation of the hooks
+- [x] Create default hook
+- [x] Create task runner
+- [x] Run all tasks
+- [x] Run tasks by group name
+- [x] Run task by name
+- [ ] Task `cwd` support.
+- [ ] Task Runner Variables Support
+- [ ] Task Output Verbosity
+- [ ] Task Branch Filtering
+- [ ] Task Include/Exclude Regex
+- [ ] Task Filtering rules.
+- [ ] Colorize output
+
 
 
 
