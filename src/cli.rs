@@ -24,13 +24,15 @@ pub enum Commands {
 }
 
 #[derive(Args, Debug)]
+/// The arguments for installing the git hooks
 pub struct InstallArgs {
-    /// The default directory to install the git hooks.
+    /// Define the hooks in the specified directory.
     #[arg(short, long, default_value_t = String::from(".husky"))]
     pub directory: String,
 }
 
 #[derive(Args, Debug)]
+/// The arguments to add a git hook and append commands to the scripts
 pub struct SetArgs {
     /// The git hook to add (pre-commit, pre-push, etc)
     pub hook: String,
@@ -41,6 +43,7 @@ pub struct SetArgs {
 }
 
 #[derive(Args, Debug)]
+/// The arguments to execute tasks defined by the task runner
 pub struct RunArgs {
     /// The name of the task to run
     #[arg(short, long)]
