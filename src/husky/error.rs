@@ -1,13 +1,30 @@
+//! The module that contains the shared application error
+
+/// Simplified [HuskyError] that contains a result
 pub type HuskyResult<T> = Result<T, HuskyError>;
+
+/// Simplified [HuskyError] type contains a unit result.
 pub type UnitHuskyResult = HuskyResult<()>;
 
+/// The shared application error object
 #[derive(Debug)]
 pub enum HuskyError {
+    /// Errors returned by the [git2::Error] crate.
     Git(git2::Error),
+
+    /// Errors returned by [std::io::Error]
     Io(std::io::Error),
+
+    /// The task runner was not found or could not be parsed
     InvalidTaskRunnerFile,
+
+    /// The specified task was not found
     TaskNotFound,
+
+    /// The task did complete successfully
     TaskFailed,
+
+    /// Errors returned by [serde_json::Error]
     Serde(serde_json::Error),
 }
 

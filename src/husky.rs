@@ -150,12 +150,13 @@ pub fn list(
     task_runner::display_tasks(&task_list)
 }
 
-/// Run tasks by name or group name.
-///
+/// Runs a task defined in the task-runner.json file.
 /// ## Parameters
 ///
+/// - `args`: The task or group name to run.
 /// - `repository` - the husky wrapper around the git repository
 /// - `file_manager` - the husky wrapper around the file system.
+/// - `task_runner` - The husky wrapper around the spawned command
 pub fn run(
     args: &RunArgs,
     repository: &impl HuskyRepository,

@@ -50,7 +50,7 @@ cargo husky set pre-commit -c "cargo husky run -n welcome-message-example"
 - [x] Run all tasks
 - [x] Run tasks by group name
 - [x] Run task by name
-- [ ] Task `cwd` support.
+- [x] Task `cwd` support.
 - [ ] Task Runner Variables Support
 - [ ] Task Output Verbosity
 - [ ] Task Branch Filtering

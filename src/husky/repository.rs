@@ -1,3 +1,4 @@
+//! The module that contains the husky git repository operations.
 use std::path::PathBuf;
 
 use git2::{Repository, RepositoryOpenFlags};
@@ -10,17 +11,51 @@ use crate::husky::error::{HuskyResult, UnitHuskyResult};
 const DEFAULT_DIRECTORY: &str = ".husky";
 const GIT_CONFIG_HOOKS_PATH: &str = "core.hooksPath";
 
+/// The trait that defined the required git repository operations
 #[cfg_attr(test, automock)]
 pub trait HuskyRepository {
+    /// Opens the repisotry in the current working directory
+    ///
+    /// ## Returns
+    ///
+    /// An instance of the repository
     fn open_repository() -> HuskyResult<Self>
     where
         Self: Sized;
+
+    /// Gets the path where the husky configuration files are installed.
+    ///
+    /// ## Parameters
+    /// - `&self` - A referene to the implementation type
+    ///
+    /// ## Returns
+    /// The [PathBuf] where the husky configuration files are stored.
     fn get_husky_path(&self) -> HuskyResult<PathBuf>;
+
+    /// Sets the repository git config `core.hooksPath` value.
+    ///
+    /// ## Parameters
+    /// - `&self` - A referene to the implementation type
+    /// - `directory` - The directory that will store the git hook scripts
     fn set_hook_path(&self, directory: &str) -> UnitHuskyResult;
+
+    /// Removes the git config `core.hooksPath` value.
+    ///
+    /// ## Parameters
+    /// - `&self` - A referene to the implementation type
     fn remove_hook_path(&self) -> UnitHuskyResult;
+
+    /// Gets the repository path that contains the `.git` folder.
+    ///
+    /// ## Parameters
+    /// - `&self` - A referene to the implementation type
+    ///
+    /// ## Returns
+    /// The [PathBuf] of the directory that containts the `.git` folder
     fn get_repository_root_path(&self) -> HuskyResult<PathBuf>;
 }
 
+/// The struct that is used to implment the [git2] repository operations
 pub struct GitRepository {
     repository: Repository,
 }
