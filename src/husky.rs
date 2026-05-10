@@ -18,6 +18,13 @@ const ASSETS_HOOK: &str = "hook";
 const ASSETS_TASK_RUNNER: &str = "task-runner.json";
 const ASSETS_HUSKY_SH: &str = "husky.sh";
 
+/// Installs the git hooks in the specified directory
+///
+/// ## Arguments
+///
+/// - `directory` - the destination to install and configure the git hooks
+/// - `repository` - the husky wrapper around the git repository
+/// - `file_manager` - the husky wrapper around the file system.
 pub fn install(
     directory: &str,
     repository: &impl HuskyRepository,
@@ -47,6 +54,12 @@ pub fn install(
     Ok(())
 }
 
+/// Uninstall the git hooks the husky configuration files
+///
+/// ## Arguments
+///
+/// - `repository` - the husky wrapper around the git repository
+/// - `file_manager - the husky wrapper around the file system
 pub fn uninstall(
     repository: &impl HuskyRepository,
     file_manager: &impl HuskyFilesystemManager,
@@ -76,6 +89,18 @@ pub fn uninstall(
     Ok(())
 }
 
+/// Creates the git hook and append the command to the hook script
+///
+/// If the git hook script does not exist, the file is created, the execute permission is enabled
+/// and the optional command is appended to the script.
+/// If the git hook exists, the specified command will be appended to the script.
+///
+/// ## Parameters
+///
+/// - `hook_name` - the name of the git hook (`pre-commit`, `pre-push`, `pre-receive`, etc)
+/// - `command` - the shell command to append to the hook script
+/// - `repository` - the husky wrapper around the git repository
+/// - `file_manager` - the husky wrapper around the file system.
 pub fn set_hook(
     hook_name: &str,
     command: &str,
@@ -106,6 +131,11 @@ pub fn set_hook(
     Ok(())
 }
 
+/// List the available commands defined in the task runner
+/// ## Parameters
+///
+/// - `repository` - the husky wrapper around the git repository
+/// - `file_manager` - the husky wrapper around the file system.
 pub fn list(
     repository: &impl HuskyRepository,
     file_manager: &impl HuskyFilesystemManager,
@@ -117,6 +147,10 @@ pub fn list(
     task_runner::display_tasks(&task_list)
 }
 
+/// ## Parameters
+///
+/// - `repository` - the husky wrapper around the git repository
+/// - `file_manager` - the husky wrapper around the file system.
 pub fn run(
     args: &RunArgs,
     repository: &impl HuskyRepository,
