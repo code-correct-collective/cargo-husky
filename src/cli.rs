@@ -1,3 +1,4 @@
+//! The collection of command line arguments. 
 use clap::{Args, Parser, Subcommand};
 
 /// A program to install git pre-commit ant pre-push hooks in a
