@@ -1,3 +1,5 @@
+//! The core library for the husky git hooks and configuration
+
 pub mod error;
 pub mod filesystem_manager;
 pub mod repository;
@@ -132,6 +134,7 @@ pub fn set_hook(
 }
 
 /// List the available commands defined in the task runner
+///
 /// ## Parameters
 ///
 /// - `repository` - the husky wrapper around the git repository
@@ -147,6 +150,8 @@ pub fn list(
     task_runner::display_tasks(&task_list)
 }
 
+/// Run tasks by name or group name.
+///
 /// ## Parameters
 ///
 /// - `repository` - the husky wrapper around the git repository
