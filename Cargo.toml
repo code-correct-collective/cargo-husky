@@ -9,7 +9,7 @@ repository = "https://github.com/code-correct-collective/cargo-husky"
 readme = "README.md"
 categories = ["development-tools::cargo-plugins", "command-line-utilities"]
 keywords = ["cargo-subcommand", "git", "hook", "hooks", "husky"]
-exclue = ["tests/"]
+exclude = ["tests/"]
 
 [[bin]]
 name = "cargo-husky"
