@@ -3,6 +3,8 @@ name: C3 Cargo Husky
 on:
   push:
     branches: [ "main" ]
+    tags: 
+    - 'v*'
   pull_request:
     branches: [ "main" ]
 
@@ -35,4 +37,9 @@ jobs:
       run: cargo build --profile ${{ matrix.BUILD_TARGET }}
     - name: Run tests
       run: cargo test --profile ${{ matrix.BUILD_TARGET }}
-
+    - name: crates.io login
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: cargo login ${{ secrets.CARGO_API_KEY }}
+    - name: crates.io publish
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: cargo publish
