@@ -6,6 +6,7 @@ description = "A cargo sub-command to manage git hooks, execute hook scripts and
 authors = [ "Geoff Horsey" ]
 license="Apache-2.0 OR MIT"
 repository = "https://github.com/code-correct-collective/cargo-husky"
+rust-version = "1.87.0"
 readme = "README.md"
 categories = ["development-tools::cargo-plugins", "command-line-utilities"]
 keywords = ["cargo-subcommand", "git", "hook", "hooks", "husky"]
