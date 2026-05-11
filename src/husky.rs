@@ -167,9 +167,15 @@ pub fn run(
     let task_list = TaskList::open(install_path.as_path(), file_manager)?;
 
     match (&args.name, &args.group) {
-        (None, None) => task_runner::run_tasks(&task_list.tasks.iter().collect(), task_runner)?,
-        (Some(name), _) => task_runner::run_task_by_name(&task_list.tasks, name, task_runner)?,
-        (_, Some(group)) => task_runner::run_tasks_by_group(&task_list.tasks, group, task_runner)?,
+        (None, None) => {
+            task_runner::run_tasks(&task_list.tasks.iter().collect(), task_runner, repository)?
+        }
+        (Some(name), _) => {
+            task_runner::run_task_by_name(&task_list.tasks, name, task_runner, repository)?
+        }
+        (_, Some(group)) => {
+            task_runner::run_tasks_by_group(&task_list.tasks, group, task_runner, repository)?
+        }
     };
 
     Ok(())

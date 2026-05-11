@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::husky::{
     error::{HuskyError, HuskyResult, UnitHuskyResult},
     filesystem_manager::HuskyFilesystemManager,
+    repository::HuskyRepository,
 };
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -23,14 +24,16 @@ pub struct Task {
 }
 
 pub trait TaskRunner {
-    fn run(&self, task: &Task) -> HuskyResult<Output>;
+    fn run(&self, task: &Task, repository: &impl HuskyRepository) -> HuskyResult<Output>;
 }
 
 pub struct HuskyTaskRunner;
 
 impl TaskRunner for HuskyTaskRunner {
-    fn run(&self, task: &Task) -> HuskyResult<Output> {
+    fn run(&self, task: &Task, repository: &impl HuskyRepository) -> HuskyResult<Output> {
         let mut command = Command::new(&*task.command);
+
+        _ = repository.get_staged_files();
 
         if let Some(args) = &task.args {
             command.args(args);
@@ -86,10 +89,14 @@ pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
     Ok(())
 }
 
-pub fn run_task(task: &Task, task_runner: &impl TaskRunner) -> UnitHuskyResult {
+pub fn run_task(
+    task: &Task,
+    task_runner: &impl TaskRunner,
+    repository: &impl HuskyRepository,
+) -> UnitHuskyResult {
     write_task_header(&task.name)?;
 
-    let output = task_runner.run(task)?;
+    let output = task_runner.run(task, repository)?;
 
     if output.status.success() {
         let out = String::from_utf8_lossy(&output.stdout);
@@ -123,9 +130,13 @@ pub fn run_task(task: &Task, task_runner: &impl TaskRunner) -> UnitHuskyResult {
     }
 }
 
-pub fn run_tasks(tasks: &Vec<&Task>, task_runner: &impl TaskRunner) -> UnitHuskyResult {
+pub fn run_tasks(
+    tasks: &Vec<&Task>,
+    task_runner: &impl TaskRunner,
+    repository: &impl HuskyRepository,
+) -> UnitHuskyResult {
     for task in tasks {
-        run_task(task, task_runner)?;
+        run_task(task, task_runner, repository)?;
     }
     Ok(())
 }
@@ -134,6 +145,7 @@ pub fn run_tasks_by_group(
     tasks: &[Task],
     group: &str,
     task_runner: &impl TaskRunner,
+    repository: &impl HuskyRepository,
 ) -> UnitHuskyResult {
     writeln!(
         io::stdout(),
@@ -152,7 +164,7 @@ pub fn run_tasks_by_group(
         writeln!(io::stdout(), "⚠️ Group 👥 {} was not found", group)?;
     }
 
-    run_tasks(&groups, task_runner)?;
+    run_tasks(&groups, task_runner, repository)?;
 
     Ok(())
 }
@@ -161,6 +173,7 @@ pub fn run_task_by_name(
     tasks: &[Task],
     name: &str,
     task_runner: &impl TaskRunner,
+    repository: &impl HuskyRepository,
 ) -> UnitHuskyResult {
     let named: Vec<&Task> = tasks
         .iter()
@@ -168,7 +181,7 @@ pub fn run_task_by_name(
         .collect();
 
     if let Some(t) = named.first() {
-        run_task(t, task_runner)
+        run_task(t, task_runner, repository)
     } else {
         write_task_header(name)?;
 

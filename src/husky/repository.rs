@@ -1,7 +1,7 @@
 //! The module that contains the husky git repository operations.
-use std::path::PathBuf;
+use std::{path::PathBuf, vec};
 
-use git2::{Repository, RepositoryOpenFlags};
+use git2::{Repository, RepositoryOpenFlags, StatusOptions};
 
 #[cfg(test)]
 use mockall::automock;
@@ -53,6 +53,12 @@ pub trait HuskyRepository {
     /// ## Returns
     /// The [PathBuf] of the directory that containts the `.git` folder
     fn get_repository_root_path(&self) -> HuskyResult<PathBuf>;
+
+    /// Produces the list of files that are currently staged in the system
+    ///
+    /// ## Returns
+    /// Returns a [Vec<String>] of the paths that are currently staged
+    fn get_staged_files(&self) -> HuskyResult<Vec<String>>;
 }
 
 /// The struct that is used to implment the [git2] repository operations
@@ -105,5 +111,20 @@ impl HuskyRepository for GitRepository {
         }; // every .git folder should have a parent.
 
         Ok(path.to_path_buf())
+    }
+
+    fn get_staged_files(&self) -> HuskyResult<Vec<String>> {
+        let mut opts = StatusOptions::new();
+
+        opts.show(git2::StatusShow::IndexAndWorkdir);
+
+        let statuses = self.repository.statuses(Some(&mut opts))?;
+
+        for entry in statuses.iter() {
+            let status = entry.status();
+            dbg!(status);
+        }
+
+        Ok(vec![])
     }
 }
