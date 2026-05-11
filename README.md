@@ -15,22 +15,6 @@ Heavy inspiration for this rust port is taken from the great tool [Husky.Net](ht
 cargo install c3-cargo-husky --locked
 ```
 
-See the list of your tasks:
-```shell
-cargo husky list
-```
-
-Run all the defined hooks:
-```shell
-cargo husky run
-```
-
-Install your first hook with the following command
-
-```shell
-cargo husky set pre-commit -c "cargo husky run -n welcome-message-example"
-```
-
 ## Example/Tutorial
 
 ### Install/enable the hooks in your git repository
