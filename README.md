@@ -11,8 +11,6 @@ Heavy inspiration for this rust port is taken from the great tool [Husky.Net](ht
 
 ## Installation
 
-Eventually just run (not published yet)
-
 ```shell
 cargo install c3-cargo-husky --locked
 ```
@@ -57,8 +55,4 @@ cargo husky set pre-commit -c "cargo husky run -n welcome-message-example"
 - [ ] Task Include/Exclude Regex
 - [ ] Task Filtering rules.
 - [ ] Colorize output
-
-
-
-
 
