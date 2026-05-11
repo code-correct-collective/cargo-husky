@@ -85,27 +85,10 @@ Notice the git `pre-commit` hook is executed before the commit is applied to you
 
 ### Enabling the checks for future developers:
 
-Future developers will need to have the `husky` subcommand installed. Once the subcommand is available in their path
-they will need to run the following command once to enable the hooks in their local repository:
+Future developers will need to have the `husky` subcommand installed. Then they need to run the following command 
+to enable the git hooks in their local repository:
 
 ```shell
 cargo husky install
 ```
-
-
-## 1.0 TODOs:
-
-- [x] Initial installation of husky settings
-- [x] Uninstallation of the hooks
-- [x] Create default hook
-- [x] Create task runner
-- [x] Run all tasks
-- [x] Run tasks by group name
-- [x] Run task by name
-- [x] Task `cwd` support.
-- [ ] Task Branch Filtering
-- [ ] Task Include/Exclude Glob
-- [ ] Task Runner Filter Source (staged and custom)
-- [ ] Task Output Verbosity
-- [ ] Colorize output
 
