@@ -31,12 +31,11 @@
          "name": "cargo-test",
          "group": "pre-push",
          "command": "cargo",
-         "args": [ "test" ],
-         "include": ["*.rs"]
+         "args": [ "test" ]
       },
       {
          "name": "cargo-audit",
-         "group": "pre-push",
+         "group": "pre-commit",
          "command": "cargo",
          "args": [ "audit" ],
          "include": ["Cargo.toml", "Cargo.lock"]
