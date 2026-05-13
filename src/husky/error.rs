@@ -30,7 +30,7 @@ pub enum HuskyError {
     /// Errors returned by [serde_json::Error]
     Serde(serde_json::Error),
 
-    /// Errors returned by Globset [globset::Error]
+    /// Errors returned by [globset::Error]
     Globset(globset::Error),
 }
 

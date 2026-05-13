@@ -57,7 +57,7 @@ pub trait HuskyRepository {
     /// Produces the list of files that are currently staged in the system
     ///
     /// ## Returns
-    /// Returns a [Vec<String>] of the paths that are currently staged
+    /// Returns a [`Vec<String>`] of the paths that are currently staged
     fn get_staged_files(&self) -> HuskyResult<Vec<String>>;
 }
 

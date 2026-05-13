@@ -1,3 +1,4 @@
+//! This module contains the code that handles running tasks.
 use std::{
     fs,
     io::{self, Write},
@@ -15,22 +16,55 @@ use crate::husky::{
     repository::HuskyRepository,
 };
 
+/// The definition of a task from the `task-runner.json` file
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Task {
+    /// The name of the task, can be used in the `cargo husky run -n (name)` command.
     pub name: Rc<str>,
+    /// The group  name of the task, can be used to run a group of tasks with `cargo husky run -g
+    /// (group)`
     pub group: Option<Rc<str>>,
+    /// The shell command to execute
     pub command: Rc<str>,
+    /// The current working directory to run the task within.
     pub cwd: Option<Rc<str>>,
+
+    /// The arguments to pass to the command.
     pub args: Option<Vec<String>>,
+
+    /// A glob pattern of files that at least one must exist to run the task
     pub include: Option<Vec<String>>,
+
+    /// A glob pattern of files that if any exist the task will be skipped.
     pub exclude: Option<Vec<String>>,
 }
 
+/// The trait that wraps the IO process from the remainder of the code.
 pub trait TaskRunner {
+    /// Handles executing the process.
+    ///
+    /// ## Parameters
+    /// - `&self` - A referene to the implementation type
+    /// - `task` - The task to attempt to run.
+    /// - `repository` - The git repository for context.
+    ///
+    /// ## Returns
+    /// The [Output] of the command.
     fn run(&self, task: &Task, repository: &impl HuskyRepository) -> HuskyResult<Output>;
+
+    /// Tests if the task should run based on if the file globs and the list of paths
+    ///
+    /// ## Parameters
+    /// - `&self` - A reference to the implementation type
+    /// - `globs` - A list of glob patterns from either the include/exclude task definition
+    /// - `paths` - The source of paths used to filter against
+    ///
+    /// ## Returns
+    /// A [bool] when at least one of the globs matched the incoming paths.
     fn should_run(&self, globs: &[String], paths: &[String]) -> HuskyResult<bool>;
 }
 
+/// The default struct to implement the [TaskRunner] trait.
 pub struct HuskyTaskRunner;
 
 impl TaskRunner for HuskyTaskRunner {
@@ -84,14 +118,25 @@ impl TaskRunner for HuskyTaskRunner {
     }
 }
 
+/// The collection of tasks deserialized from the `task-runner.json` file
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TaskList {
+    /// The JSON schema reference
     #[serde(rename = "$schema")]
     pub schema: String,
+    /// The list of [Task] objects.
     pub tasks: Vec<Task>,
 }
 
 impl TaskList {
+    /// Deserialized the `task-runner.json` into an object.
+    ///
+    /// ## Parameters
+    /// - `path` - The [Path] to the `task-runner.json` file
+    /// - `filesystem_manager` - An instance of the [HuskyFilesystemManager]
+    ///
+    /// ## Returns
+    /// The deserialized instance of the [TaskList]
     pub fn open(
         path: &Path,
         filesystem_manager: &impl HuskyFilesystemManager,
@@ -110,6 +155,10 @@ impl TaskList {
     }
 }
 
+/// Displays the tasks defined in the `task-runner.json` file.
+///
+/// ## Parameters
+/// - `task_list` - The list of tasks defined in the `task-runner.json` file.
 pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
     let sep = "=".repeat(80);
     writeln!(io::stdout(), "{}", sep)?;
@@ -126,6 +175,12 @@ pub fn display_tasks(task_list: &TaskList) -> UnitHuskyResult {
     Ok(())
 }
 
+/// Runs a specific tasks
+///
+/// ## Parameters
+/// - `task` - The specific task to run
+/// - `task_runner` - The [TaskRunner] instance that handles the process.
+/// - `repository` - The [HuskyRepository] instance that represents the git repository
 pub fn run_task(
     task: &Task,
     task_runner: &impl TaskRunner,
@@ -167,6 +222,12 @@ pub fn run_task(
     }
 }
 
+/// Runs the specified list of tasks
+///
+/// ## Parameters
+/// - `tasks` - The list of tasks to execute
+/// - `tassk_runner` - The [TaskRunner] instance to handle the processes
+/// - `repository` - The [HuskyRepository] of the current git repository.
 pub fn run_tasks(
     tasks: &Vec<&Task>,
     task_runner: &impl TaskRunner,
@@ -185,6 +246,13 @@ pub fn run_tasks(
     Ok(())
 }
 
+/// Runs the list of tasks that match a group name.
+///
+/// ## Parameters
+/// - `tasks` - The list of tasks to filter.
+/// - `group` - The group name to use when filtering.
+/// - `task_runner` - The [TaskRunner] instance to execute the task.
+/// - `repository` = The [HuskyRepository] of the current git repository.
 pub fn run_tasks_by_group(
     tasks: &[Task],
     group: &str,
@@ -213,6 +281,13 @@ pub fn run_tasks_by_group(
     Ok(())
 }
 
+/// Runs the specific task that match the specified task name.
+///
+/// ## Parameters
+/// - `tasks` - The list of tasks to filter.
+/// - `name` - The task name to use when filtering.
+/// - `task_runner` - The [TaskRunner] instance to execute the task.
+/// - `repository` = The [HuskyRepository] of the current git repository.
 pub fn run_task_by_name(
     tasks: &[Task],
     name: &str,
