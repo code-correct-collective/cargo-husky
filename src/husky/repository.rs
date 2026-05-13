@@ -1,7 +1,7 @@
 //! The module that contains the husky git repository operations.
-use std::{path::PathBuf, vec};
+use std::path::PathBuf;
 
-use git2::{Repository, RepositoryOpenFlags, StatusOptions};
+use git2::{Repository, RepositoryOpenFlags, Status, StatusOptions};
 
 #[cfg(test)]
 use mockall::automock;
@@ -120,11 +120,26 @@ impl HuskyRepository for GitRepository {
 
         let statuses = self.repository.statuses(Some(&mut opts))?;
 
+        let mut result = Vec::new();
+
         for entry in statuses.iter() {
             let status = entry.status();
-            dbg!(status);
+            let in_index = status.intersects(
+                Status::INDEX_NEW
+                    | Status::INDEX_MODIFIED
+                    | Status::INDEX_DELETED
+                    | Status::INDEX_RENAMED
+                    | Status::INDEX_TYPECHANGE,
+            );
+
+            if in_index {
+                if let Some(path) = entry.path() {
+                    result.push(path.to_string());
+                }
+            }
+            // dbg!(status);
         }
 
-        Ok(vec![])
+        Ok(result)
     }
 }

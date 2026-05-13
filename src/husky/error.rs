@@ -24,8 +24,20 @@ pub enum HuskyError {
     /// The task did complete successfully
     TaskFailed,
 
+    /// The task was skipped due to include or exclude
+    TaskSkipped(String),
+
     /// Errors returned by [serde_json::Error]
     Serde(serde_json::Error),
+
+    /// Errors returned by Globset [globset::Error]
+    Globset(globset::Error),
+}
+
+impl From<globset::Error> for HuskyError {
+    fn from(value: globset::Error) -> Self {
+        HuskyError::Globset(value)
+    }
 }
 
 impl From<git2::Error> for HuskyError {

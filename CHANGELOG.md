@@ -6,8 +6,10 @@ These are the changes included with the releases of this software.
 These are planned changes that are in progress and not yet implemented
 
 - Task Branch Filtering
-- Task Include/Exclude Glob
 - Task Runner Filter Source (staged and custom)
+
+## v0.2.0 - 5/12/2026
+- Added the ability to include/exclude running tasks based on file glob pattern.
 
 ## v0.1.0 - 5/10/2026
 

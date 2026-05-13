@@ -6,6 +6,7 @@ use std::{
     rc::Rc,
 };
 
+use globset::{Glob, GlobSetBuilder};
 use serde::{Deserialize, Serialize};
 
 use crate::husky::{
@@ -21,10 +22,13 @@ pub struct Task {
     pub command: Rc<str>,
     pub cwd: Option<Rc<str>>,
     pub args: Option<Vec<String>>,
+    pub include: Option<Vec<String>>,
+    pub exclude: Option<Vec<String>>,
 }
 
 pub trait TaskRunner {
     fn run(&self, task: &Task, repository: &impl HuskyRepository) -> HuskyResult<Output>;
+    fn should_run(&self, globs: &[String], paths: &[String]) -> HuskyResult<bool>;
 }
 
 pub struct HuskyTaskRunner;
@@ -33,7 +37,23 @@ impl TaskRunner for HuskyTaskRunner {
     fn run(&self, task: &Task, repository: &impl HuskyRepository) -> HuskyResult<Output> {
         let mut command = Command::new(&*task.command);
 
-        _ = repository.get_staged_files();
+        let staged_files = repository.get_staged_files()?;
+
+        if let Some(include) = &task.include {
+            if !self.should_run(include, &staged_files)? {
+                return Err(HuskyError::TaskSkipped(String::from(
+                    "Included file(s) not found",
+                )));
+            }
+        }
+
+        if let Some(exclude) = &task.exclude {
+            if self.should_run(exclude, &staged_files)? {
+                return Err(HuskyError::TaskSkipped(String::from(
+                    "Excluded file(s) found",
+                )));
+            }
+        }
 
         if let Some(args) = &task.args {
             command.args(args);
@@ -44,6 +64,23 @@ impl TaskRunner for HuskyTaskRunner {
         }
 
         Ok(command.output()?)
+    }
+
+    fn should_run(&self, globs: &[String], paths: &[String]) -> HuskyResult<bool> {
+        let mut builder = GlobSetBuilder::new();
+        for glob in globs {
+            builder.add(Glob::new(glob)?);
+        }
+
+        let matcher = builder.build()?;
+
+        for path in paths {
+            if matcher.is_match(path) {
+                return Ok(true);
+            }
+        }
+
+        Ok(false)
     }
 }
 
@@ -110,7 +147,7 @@ pub fn run_task(
             writeln!(io::stderr(), "{}", err)?;
         }
 
-        writeln!(io::stdout(), "✔️ task 📋 {} succeeded", task.name)?;
+        writeln!(io::stdout(), "✔️ 📋 {} succeeded", task.name)?;
         Ok(())
     } else {
         let out = String::from_utf8_lossy(&output.stdout);
@@ -124,7 +161,7 @@ pub fn run_task(
             writeln!(io::stderr(), "{}", err)?;
         }
 
-        writeln!(io::stderr(), "🚫 task 📋 {} failed", task.name)?;
+        writeln!(io::stderr(), "🚫 📋 {} failed", task.name)?;
 
         Err(HuskyError::TaskFailed)
     }
@@ -136,7 +173,14 @@ pub fn run_tasks(
     repository: &impl HuskyRepository,
 ) -> UnitHuskyResult {
     for task in tasks {
-        run_task(task, task_runner, repository)?;
+        match run_task(task, task_runner, repository) {
+            Ok(_) => continue,
+            Err(HuskyError::TaskSkipped(message)) => {
+                writeln!(io::stderr(), "↪️ 📋 {} skipped: '{}'", task.name, message)?;
+                continue;
+            }
+            Err(err) => return Err(err),
+        }
     }
     Ok(())
 }
@@ -161,7 +205,7 @@ pub fn run_tasks_by_group(
         .collect();
 
     if groups.is_empty() {
-        writeln!(io::stdout(), "⚠️ Group 👥 {} was not found", group)?;
+        writeln!(io::stdout(), "⚠️ 👥 {} was not found", group)?;
     }
 
     run_tasks(&groups, task_runner, repository)?;
@@ -185,7 +229,7 @@ pub fn run_task_by_name(
     } else {
         write_task_header(name)?;
 
-        writeln!(io::stderr(), "⚠️ task 📋 {} was not found", name)?;
+        writeln!(io::stderr(), "⚠️ 📋 {} was not found", name)?;
 
         Err(HuskyError::TaskNotFound)
     }
@@ -195,7 +239,7 @@ fn write_task_header(task_name: &str) -> UnitHuskyResult {
     let sep = "=".repeat(80);
 
     writeln!(io::stdout(), "\n{}", sep)?;
-    writeln!(io::stdout(), "🚀 Running task 📋 {}", task_name)?;
+    writeln!(io::stdout(), "🚀 Running 📋 {}", task_name)?;
     writeln!(io::stdout(), "{}", sep)?;
     Ok(())
 }
